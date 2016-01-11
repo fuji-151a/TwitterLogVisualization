@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Real Time Chart</title>
+    <link rel="stylesheet" type="text/css" href="css/epoch.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/epoch.min.js"></script>
+  </head>
+  <body>
+  <h1>Real Time Chart</h1>
+  <div id="area" class="epoch category10" style="height: 200px;"></div>
+  <script>
+    idx = ((new Date()).getTime()/1000)|0;
+    var data = [
+      { label: 'Layer 3', values: [ {time: idx, y: 10}] }
+    ];
+
+    var areaChartInstance = $('#area').epoch({
+        type: 'time.line',
+        data: data,
+        axes: ['left', 'right', 'bottom']
+    });
+
+    var xmlHttpRequest = new XMLHttpRequest();
+    var timestamp
+    var log_num
+    xmlHttpRequest.onreadystatechange = function() {
+      if( this.readyState == 4 && this.status == 200 ) {
+        if( this.response ) {
+            timestamp = this.response.timestamp
+            log_num = this.response.log_num
+            console.log(this.response.log_num)
+        }
+      }
+    }
+
+    xmlHttpRequest.open( 'GET', 'http://localhost:8000/data.json', true );
+    xmlHttpRequest.responseType = 'json';
+    xmlHttpRequest.send( null );
+
+    var idx = 3;
+    var nextData;
+    var interval = 1000
+
+    function addData() {
+        idx = ((new Date()).getTime()/1000)|0;
+        nextData = [
+          {time: idx, y: log_num }
+        ];
+        areaChartInstance.push(nextData);
+
+        setTimeout(function() {
+            xmlHttpRequest.open( 'GET', 'http://localhost:8000/data.json', true );
+            xmlHttpRequest.responseType = 'json';
+            xmlHttpRequest.send( null );
+            addData();
+        }, interval);
+    }
+    addData();
+  </script>
+  </body>
+</html>
