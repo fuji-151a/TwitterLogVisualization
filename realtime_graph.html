@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <meta charset = "UTF-8" />
+    <title>Real Time Chart</title>
+    <link rel="stylesheet" type="text/css" href="css/epoch.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/epoch.min.js"></script>
+    <script src="https://cdn.mlkcca.com/v2.0.0/milkcocoa.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.4.2/js-yaml.min.js'></script>
+  </head>
+  <body>
+  <h1>Real Time Chart</h1>
+  <div id="area" class="epoch category20" style="height: 200px;"></div>
+  <div id="gaugeChart" class="epoch gauge-small"></div>
+  <script>
+    idx = ((new Date()).getTime()/1000)|0;
+    var leftRange = [0, 25];
+    var data = [
+      { label: 'realtime', values: [ {time: idx, y: 0}], range: leftRange }
+    ];
+
+    var areaChartInstance = $('#area').epoch({
+        type: 'time.line',
+        data: data,
+        axes: ['left', 'right', 'bottom'],
+        range: {
+          left: leftRange
+        }
+    });
+
+    var timestamp;
+    var log_num = 0;
+    var idx = 3;
+    var nextData;
+    var interval = 1000;
+
+    var milkcocoa = new MilkCocoa("hogehoge.mlkcca.com");
+    var ds = milkcocoa.dataStore('sample');
+    ds.on('send', function(sent) {
+      console.log('send!', sent.value);
+      log_num = sent.value.log_num
+      timestamp = sent.value.timestamp
+    });
+
+    function addData() {
+        idx = timestamp|0;
+        nextData = [
+          {time: idx, y: log_num }
+        ];
+        areaChartInstance.push(nextData);
+
+        setTimeout(function() {
+            addData();
+        }, interval);
+    }
+    addData();
+  </script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+config:
+ zkHost: "localhost"
+ topic: "test-topic"
+ groupId: "test-consumer"
+ milkcocoaId: "hogehoge.mlkcca.com"
