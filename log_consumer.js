@@ -13,20 +13,17 @@ opts.parse([
 ]);
 var conf = opts.get('config');
 var yml = yaml.safeLoad(fs.readFileSync(conf, 'utf8'));
-var zkHost = yml.config.zkHost;
-var topic = yml.config.topic;
-var groupId = yml.config.groupId;
 
 var kafka = require('kafka-node'),
     HighLevelConsumer = kafka.HighLevelConsumer,
-    client = new kafka.Client(zkHost),
+    client = new kafka.Client(yml.config.zkHost),
     consumer = new HighLevelConsumer(
         client,
         [
-            { topic: topic }
+            { topic: yml.config.topic }
         ],
         {
-            groupId: groupId
+            groupId: yml.config.groupId
         }
     );
 
@@ -35,13 +32,15 @@ var unixtime;
 var before_unixtime = 0;
 var cnt = 0;
 var feed_data = {};
+var MilkCocoa = require('milkcocoa');
+var milkcocoa = new MilkCocoa(yml.config.milkcocoaId);
+var ds = milkcocoa.dataStore('messages');
+
 consumer.on('message', function (message) {
     toObj = JSON.parse(message['value']);
     unixtime = new Date(toObj['createdAt']).getTime() / 1000;
     if ((before_unixtime + 1) == unixtime) {
-        feed_data.timestamp = unixtime;
-        feed_data.log_cnt = cnt;
-        console.log(JSON.stringify(feed_data));
+        ds.send({"timestamp": unixtime, "log_num":cnt});
         cnt = 1; // reset
     } else {
         cnt++;
