@@ -1,0 +1,26 @@
+{
+  "name": "twitter-log-visualization",
+  "version": "1.0.0",
+  "description": "twitter log visualization",
+  "main": "realtime_graph.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "kafka-node": "0.3.0",
+    "js-yaml": ">=3.5.2",
+    "opts": ">=1.2.2",
+    "milkcocoa": ">=0.4.0",
+    "date-utils": ">=1.2.17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuji-151a/TwitterLogVisualization.git"
+  },
+  "author": "fuji-151a",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fuji-151a/TwitterLogVisualization/issues"
+  },
+  "homepage": "https://github.com/fuji-151a/TwitterLogVisualization#readme"
+}
